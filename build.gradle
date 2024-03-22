@@ -92,7 +92,7 @@ dependencies {
     // Vault
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
 
-    compileOnly 'com.github.getplusm:Engine:2.4.4'
+    compileOnly files('./libs/PLAZMER-ENGINE-2.4.4-Folia.jar\n')
 }
 
 def targetJavaVersion = 17

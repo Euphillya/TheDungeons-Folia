@@ -1,11 +1,13 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.editor.reward;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
 import t.me.p1azmer.engine.api.menu.impl.MenuViewer;
 import t.me.p1azmer.engine.editor.EditorManager;
@@ -27,7 +29,7 @@ public class DungeonRewardMainEditor extends EditorMenu<DungeonPlugin, Reward> {
         Dungeon dungeon = reward.dungeon();
 
         this.addReturn(40).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> dungeon.getEditor().getEditorRewards().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> dungeon.getEditor().getEditorRewards().open(viewer.getPlayer(), 1), null);
         });
 
         this.addItem(Material.ITEM_FRAME, EditorLocales.REWARD_ITEM, 4).setClick((viewer, event) -> {

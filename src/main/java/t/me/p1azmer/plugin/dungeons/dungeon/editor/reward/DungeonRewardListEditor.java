@@ -1,5 +1,6 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.editor.reward;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -7,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.AutoPaged;
 import t.me.p1azmer.engine.api.menu.click.ItemClick;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
@@ -35,7 +37,7 @@ public class DungeonRewardListEditor extends EditorMenu<DungeonPlugin, Dungeon> 
     public DungeonRewardListEditor(@NotNull Dungeon dungeon) {
         super(dungeon.plugin(), dungeon, Config.EDITOR_TITLE_DUNGEON.get(), 54);
 
-        this.addReturn(49).setClick((viewer, event) -> this.plugin.runTask(task -> dungeon.getEditor().open(viewer.getPlayer(), 1)));
+        this.addReturn(49).setClick((viewer, event) -> NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> dungeon.getEditor().open(viewer.getPlayer(), 1), null));
         this.addNextPage(50);
         this.addPreviousPage(48);
 
@@ -98,7 +100,7 @@ public class DungeonRewardListEditor extends EditorMenu<DungeonPlugin, Dungeon> 
 
     private void save(@NotNull MenuViewer viewer) {
         this.object.save();
-        this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
     }
 
     @Override
@@ -164,7 +166,7 @@ public class DungeonRewardListEditor extends EditorMenu<DungeonPlugin, Dungeon> 
             }
 
             if (event.isLeftClick()) {
-                this.plugin.runTask(task -> reward.getEditor().open(player, 1));
+                NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> reward.getEditor().open(player, 1), null);
             }
         };
     }

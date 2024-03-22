@@ -1,5 +1,7 @@
 package t.me.p1azmer.plugin.dungeons.mob;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
+import t.me.plazmer.engine.shaded.energie.utils.EntityUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -8,6 +10,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.config.JYML;
 import t.me.p1azmer.engine.api.manager.AbstractManager;
 import t.me.p1azmer.engine.utils.LocationUtil;
@@ -175,7 +178,8 @@ public class MobManager extends AbstractManager<DungeonPlugin> {
             return null;
         }
 
-        plugin.runTask(sync -> bukkitEntity.teleport(location));
+
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, bukkitEntity, task -> EntityUtils.teleportAsync(bukkitEntity, location), null);
         return bukkitEntity;
     }
 

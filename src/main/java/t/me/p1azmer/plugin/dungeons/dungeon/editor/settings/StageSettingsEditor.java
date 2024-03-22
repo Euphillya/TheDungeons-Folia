@@ -1,11 +1,13 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.editor.settings;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.AutoPaged;
 import t.me.p1azmer.engine.api.menu.click.ItemClick;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
@@ -37,7 +39,7 @@ public class StageSettingsEditor extends EditorMenu<DungeonPlugin, StageSettings
         super(settings.dungeon().plugin(), settings, Config.EDITOR_TITLE_DUNGEON.get(), 36);
 
         this.addReturn(31).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> settings.dungeon().getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> settings.dungeon().getEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addNextPage(32);
         this.addPreviousPage(30);
@@ -54,7 +56,7 @@ public class StageSettingsEditor extends EditorMenu<DungeonPlugin, StageSettings
     private void save(@NotNull MenuViewer viewer) {
         this.object.dungeon().save();
         DungeonStage.call(this.object.dungeon(), DungeonStage.CANCELLED, "stage editor need reboot");
-        this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
     }
 
     @Override
@@ -107,7 +109,7 @@ public class StageSettingsEditor extends EditorMenu<DungeonPlugin, StageSettings
                     this.save(viewer);
                     return true;
                 });
-                plugin.runTask(task -> player.closeInventory());
+                NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> player.closeInventory(), null);
             }
         };
     }

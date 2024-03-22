@@ -1,7 +1,9 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.editor.region;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
 import t.me.p1azmer.engine.api.menu.impl.MenuViewer;
 import t.me.p1azmer.engine.editor.EditorManager;
@@ -23,7 +25,7 @@ public class DungeonRegionMainEditor extends EditorMenu<DungeonPlugin, Region> {
         Dungeon dungeon = region.getDungeon();
 
         this.addReturn(22).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> dungeon.getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> dungeon.getEditor().open(viewer.getPlayer(), 1), null);
         });
 
 
@@ -92,6 +94,6 @@ public class DungeonRegionMainEditor extends EditorMenu<DungeonPlugin, Region> {
 
     private void save(@NotNull MenuViewer viewer) {
         this.object.getDungeon().save();
-        this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
     }
 }

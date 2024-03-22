@@ -1,11 +1,13 @@
 package t.me.p1azmer.plugin.dungeons.announce.editor;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
 import t.me.p1azmer.engine.api.menu.impl.MenuViewer;
 import t.me.p1azmer.engine.utils.ItemReplacer;
@@ -24,7 +26,7 @@ public class AnnounceMainEditor extends EditorMenu<DungeonPlugin, Announce> {
         super(announce.plugin(), announce, Config.EDITOR_TITLE_ANNOUNCE.get(), 9);
 
         this.addReturn(8).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> announce.manager().getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> announce.manager().getEditor().open(viewer.getPlayer(), 1), null);
         });
 
         this.addItem(Material.COMPARATOR, EditorLocales.ANNOUNCE_MESSAGES, 0).setClick((viewer, event) -> {
@@ -71,7 +73,7 @@ public class AnnounceMainEditor extends EditorMenu<DungeonPlugin, Announce> {
 
     private void save(@NotNull MenuViewer viewer) {
         this.object.save();
-        this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
     }
 
     @Override

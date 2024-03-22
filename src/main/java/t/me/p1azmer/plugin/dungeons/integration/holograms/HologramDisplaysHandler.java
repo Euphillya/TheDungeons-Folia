@@ -1,5 +1,6 @@
 package t.me.p1azmer.plugin.dungeons.integration.holograms;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import me.filoghost.holographicdisplays.api.hologram.HologramLines;
@@ -9,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.utils.Colorizer;
 import t.me.p1azmer.engine.utils.LocationUtil;
 import t.me.p1azmer.engine.utils.Pair;
@@ -51,7 +53,7 @@ public class HologramDisplaysHandler implements HologramHandler {
     @Override
     public void create(@NotNull Dungeon dungeon, @Nullable ChestModule module) {
         if (module == null) return;
-        plugin.runTask(sync -> {
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, task -> {
             List<String> messages;
             Set<Pair<DungeonChestBlock, Hologram>> holograms = this.holoMap.computeIfAbsent(dungeon.getId(), set -> new HashSet<>());
             for (DungeonChestBlock dungeonChestBlock : module.getChests()) {
@@ -83,7 +85,7 @@ public class HologramDisplaysHandler implements HologramHandler {
 
     @Override
     public void update(@NotNull DungeonChestBlock dungeonChestBlock) {
-        plugin.runTask(sync -> {
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, task -> {
             Set<Pair<DungeonChestBlock, Hologram>> holograms = this.holoMap.computeIfAbsent(dungeonChestBlock.getDungeon().getId(), set -> new HashSet<>());
             holograms.stream().filter(f -> f.getFirst().equals(dungeonChestBlock)).map(Pair::getSecond).toList().forEach(hologram -> {
                 List<String> messages = new ArrayList<>(dungeonChestBlock.getDungeon().getHologramSettings().getMessages(dungeonChestBlock.getState()));

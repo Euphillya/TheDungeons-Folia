@@ -1,5 +1,6 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.editor;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -7,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.manager.EventListener;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
 import t.me.p1azmer.engine.api.menu.impl.MenuViewer;
@@ -49,7 +51,7 @@ public class DungeonMainEditor extends EditorMenu<DungeonPlugin, Dungeon> implem
         super(dungeon.plugin(), dungeon, Config.EDITOR_TITLE_DUNGEON.get(), 54);
 
         this.addReturn(49).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.plugin.getEditor().getDungeonEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.plugin.getEditor().getDungeonEditor().open(viewer.getPlayer(), 1), null);
         });
 
         this.addItem(Material.NAME_TAG, EditorLocales.DUNGEON_NAME, 3).setClick((viewer, event) -> {
@@ -77,43 +79,43 @@ public class DungeonMainEditor extends EditorMenu<DungeonPlugin, Dungeon> implem
         // other editors
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzMWFlN2RjZDFlMmRkMzZjMzNhMGM5YTExNmI1NmUxNGFjZGFmMGRhZmIyYTA0OTg2ZDY1YWVhMGUzNTMxNCJ9fX0="),
                 EditorLocales.HOLOGRAM_SETTINGS, 19).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getHologramEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getHologramEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhiZGM3YTFkNmNmZjc2YTkyNTU2NTJkMzE2NTUzMjI4NWFjYzNhOWQxYzBmMTJmMzljYTAwNzc2OWE3ZWExNCJ9fX0="),
                 EditorLocales.CHEST_BLOCK_SETTINGS, 20).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getChestStateSettingsEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task ->this.getChestStateSettingsEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGFlN2JmNDUyMmIwM2RmY2M4NjY1MTMzNjNlYWE5MDQ2ZmRkZmQ0YWE2ZjFmMDg4OWYwM2MxZTYyMTZlMGVhMCJ9fX0="),
                 EditorLocales.ANNOUNCE_SETTINGS, 21).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getAnnounceSettingsEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getAnnounceSettingsEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWZiNzc5ZTU0Nzc5YWZiMmM2ZmQwNjE5YWI0ZTgwNTZmNmQ5MTQwM2U4ZjQyYzJlYzQ1YzdmNjIxMTcwMmVkZiJ9fX0="),
                 EditorLocales.MODULES_SETTINGS, 22).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getModuleSettingsEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getModuleSettingsEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODJjZGUwNjhlOTlhNGY5OGMzMWY4N2I0Y2MwNmJlMTRiMjI5YWNhNGY3MjgxYTQxNmM3ZTJmNTUzMjIzZGI3NCJ9fX0="),
                 EditorLocales.DUNGEON_REWARDS, 23).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getEditorRewards().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getEditorRewards().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhjZWI4NjMxYWRkN2NiYjU2NWRjYjcwNWYxMjEyMzQ5Y2NjZDc1NTk2NWM0NmE5MjI4NTJjOWZkOTQ4YjRiYiJ9fX0="),
                 EditorLocales.DUNGEON_EFFECTS, 24).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getEffectEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getEffectEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhlMTZiZjlkNTYxNTlkZjI1ODlmZjc2NTZmODdjYWYwZjc2MjQwZDE0ZGZhNTU2ZjJiN2FjZGUzNzYzMWY4ZCJ9fX0="),
                 EditorLocales.SCHEMATICS_SETTINGS, 25).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getSchematicsSettingsEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getSchematicsSettingsEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzIyODM5ZDVjN2ZjMDY3ODA2MmYxYzZjOGYyN2IzMzIwOTQzODRlM2JiNWM0YjVlYmQxNjc2YjI3OWIwNmJmIn19fQ=="),
                 EditorLocales.DUNGEON_REGION, 29).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getRegionMainEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getRegionMainEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg2YjlkNThiY2QxYTU1NWY5M2U3ZDg2NTkxNTljZmQyNWI4ZGQ2ZTliY2UxZTk3MzgyMjgyNDI5MTg2MiJ9fX0="),
                 EditorLocales.STAGES_SETTINGS, 30).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getStageSettingsEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getStageSettingsEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addItem(ItemUtil.createCustomHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTMxOGVlNTI3OGUwOGQ5ZTZmZTkxNjNlYzQyNjdjNzkxZjUyNDhhMzU3ZjVmNzgwZDYzNDY4MTJjNzA0ZWI4ZiJ9fX0="),
                 EditorLocales.DUNGEON_SETTINGS, 31).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.getSettingsEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getSettingsEditor().open(viewer.getPlayer(), 1), null);
         });
 //        this.addItem(barrierHead, EditorLocales.DUNGEON_PARTICLE, 16).setClick((viewer, event) -> {
 //            viewer.getPlayer().sendMessage(Colorizer.apply("&cThis page will be available later\nFollow the news in our discord: &lhttps://discord.gg/ajnPb3fdKq"));
@@ -282,7 +284,7 @@ public class DungeonMainEditor extends EditorMenu<DungeonPlugin, Dungeon> implem
 
     private void save(@NotNull MenuViewer viewer) {
         this.object.save();
-        this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
     }
 
     @Override

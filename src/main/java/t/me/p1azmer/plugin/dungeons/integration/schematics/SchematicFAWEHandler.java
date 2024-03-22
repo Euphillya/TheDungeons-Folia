@@ -26,10 +26,12 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.plugin.dungeons.DungeonPlugin;
 import t.me.p1azmer.plugin.dungeons.Placeholders;
 import t.me.p1azmer.plugin.dungeons.api.schematic.SchematicHandler;
 import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -145,25 +147,26 @@ public class SchematicFAWEHandler implements SchematicHandler {
         Location location = this.placedMap.get(dungeon);
         if (location == null) return true;
         if (!this.getEditSessionMap().containsKey(location)) return true;
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, location, schedulerTaskInter -> {
+            try {
+                Actor actor = this.plugin.getSessionConsole();
+                EditSession editSession = this.getEditSessionMap().get(location);
+                BlockBag blockBag = editSession.getBlockBag();
+                LocalSession session = this.plugin.getSessionConsole();
 
-        try {
-            Actor actor = this.plugin.getSessionConsole();
-            EditSession editSession = this.getEditSessionMap().get(location);
-            BlockBag blockBag = editSession.getBlockBag();
-            LocalSession session = this.plugin.getSessionConsole();
 
+                session.setWorldOverride(editSession.getWorld());
+                try (EditSession newEditSession = WorldEdit.getInstance().newEditSessionBuilder().blockBag(blockBag).actor(actor).world(editSession.getWorld()).build()) {
+                    editSession.undo(newEditSession);
+                }
 
-            session.setWorldOverride(editSession.getWorld());
-            try (EditSession newEditSession = WorldEdit.getInstance().newEditSessionBuilder().blockBag(blockBag).actor(actor).world(editSession.getWorld()).build()) {
-                editSession.undo(newEditSession);
+                this.worldEdit.flushBlockBag(actor, editSession);
+                this.placedMap.remove(dungeon, location);
+            } catch (NullPointerException ex) {
+                throw new RuntimeException("Error when restore the region!", ex);
             }
-
-            this.worldEdit.flushBlockBag(actor, editSession);
-            this.placedMap.remove(dungeon, location);
-            return true;
-        } catch (NullPointerException ex) {
-            throw new RuntimeException("Error when restore the region!", ex);
-        }
+        });
+        return true;
     }
 
     @Override

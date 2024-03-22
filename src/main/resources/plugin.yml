@@ -5,6 +5,7 @@ api-version: '1.17'
 author: "plazmer"
 description: "Dungeons - Automatic generation in any world"
 depend: [ PLAZMER-ENGINE ]
+folia-supported: true
 softdepend:
   - ProtectionBlocks
   - HolographicDisplays

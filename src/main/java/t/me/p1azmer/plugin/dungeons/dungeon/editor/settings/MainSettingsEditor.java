@@ -1,8 +1,10 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.editor.settings;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
 import t.me.p1azmer.engine.api.menu.impl.MenuViewer;
 import t.me.p1azmer.engine.editor.EditorManager;
@@ -26,7 +28,7 @@ public class MainSettingsEditor extends EditorMenu<DungeonPlugin, MainSettings> 
         ItemStack minimalOnlineHead = ItemUtil.createCustomHead(MINIMAL_ONLINE_HEAD_TEXTURE);
 
         this.addReturn(8).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> dungeon.getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> dungeon.getEditor().open(viewer.getPlayer(), 1), null);
         });
 
         this.addItem(new ItemStack(Material.PLAYER_HEAD), EditorLocales.DUNGEON_SETTINGS_ENABLE, 0).setClick((viewer, event) -> {
@@ -97,6 +99,6 @@ public class MainSettingsEditor extends EditorMenu<DungeonPlugin, MainSettings> 
 
     private void save(@NotNull MenuViewer viewer) {
         this.object.dungeon().save();
-        this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
     }
 }

@@ -12,9 +12,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.plugin.dungeons.api.region.RegionHandler;
 import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
 import t.me.p1azmer.plugin.dungeons.dungeon.categories.Region;
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -55,7 +57,9 @@ public class RegionHandlerWG implements RegionHandler {
         ProtectedRegion protectedRegion = new ProtectedCuboidRegion(regionName, convertToSk89qBV(location.clone().add(-regionRadius, regionRadius, regionRadius)), convertToSk89qBV(location.clone().add(regionRadius, -regionRadius, -regionRadius)));
         Objects.requireNonNull(WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world))).addRegion(protectedRegion);
         for (String flag : region.getFlags()) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "region flag -w " + world.getName() + " " + regionName + " " + flag);
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, task -> {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "region flag -w " + world.getName() + " " + regionName + " " + flag);
+            });
         }
         region.setCreated(true);
     }

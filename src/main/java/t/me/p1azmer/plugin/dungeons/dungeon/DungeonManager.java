@@ -1,11 +1,13 @@
 package t.me.p1azmer.plugin.dungeons.dungeon;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.config.JYML;
 import t.me.p1azmer.engine.api.manager.AbstractManager;
 import t.me.p1azmer.engine.utils.StringUtil;
@@ -168,7 +170,7 @@ public class DungeonManager extends AbstractManager<DungeonPlugin> {
             return false;
         }
         dungeon.cancel(false);
-        plugin.runTaskLater(task -> {
+        NexPlugin.getScheduler().runDelayed(SchedulerType.SYNC, location, task -> {
             dungeon.setLocation(location);
             module.spawn(location);
             dungeon.getModuleManager().getModules().forEach(founder -> founder.activate(true));

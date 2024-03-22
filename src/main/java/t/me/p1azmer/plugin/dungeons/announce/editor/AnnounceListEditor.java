@@ -3,6 +3,7 @@ package t.me.p1azmer.plugin.dungeons.announce.editor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.AutoPaged;
 import t.me.p1azmer.engine.api.menu.click.ItemClick;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
@@ -18,6 +19,7 @@ import t.me.p1azmer.plugin.dungeons.announce.impl.Announce;
 import t.me.p1azmer.plugin.dungeons.config.Config;
 import t.me.p1azmer.plugin.dungeons.editor.EditorLocales;
 import t.me.p1azmer.plugin.dungeons.lang.Lang;
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +31,9 @@ public class AnnounceListEditor extends EditorMenu<DungeonPlugin, AnnounceManage
         super(manager.plugin(), manager, Config.EDITOR_TITLE_ANNOUNCE.get(), 45);
 
         this.addReturn(39).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.plugin.getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> {
+                this.plugin.getEditor().open(viewer.getPlayer(), 1);
+            }, null);
         });
         this.addNextPage(44);
         this.addPreviousPage(36);
@@ -82,10 +86,10 @@ public class AnnounceListEditor extends EditorMenu<DungeonPlugin, AnnounceManage
         return (viewer, event) -> {
             if (event.isShiftClick() && event.isRightClick()) {
                 this.object.delete(announce);
-                this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+                NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
                 return;
             }
-            this.plugin.runTask(task -> announce.getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> announce.getEditor().open(viewer.getPlayer(), 1), null);
         };
     }
 }

@@ -1,0 +1,23 @@
+name: TheDungeon
+version: '2.1.2'
+main: t.me.p1azmer.plugin.dungeons.DungeonPlugin
+api-version: '1.17'
+author: "plazmer"
+description: "Dungeons - Automatic generation in any world"
+depend: [ PLAZMER-ENGINE ]
+folia-supported: true
+softdepend:
+  - ProtectionBlocks
+  - HolographicDisplays
+  - DecentHolograms
+  - WorldEdit
+  - WorldGuard
+  - ItemsAdder
+  - MMOItems
+  - GriefDefender
+  - GriefPrevention
+  - FastAsyncWorldEdit
+  - PlaceholderAPI
+  - KingdomsX
+  - PartyAndFriends
+  - Towny

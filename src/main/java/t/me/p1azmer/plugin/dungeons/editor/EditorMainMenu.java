@@ -1,6 +1,8 @@
 package t.me.p1azmer.plugin.dungeons.editor;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
 import t.me.p1azmer.engine.utils.ItemUtil;
 import t.me.p1azmer.plugin.dungeons.DungeonPlugin;
@@ -29,13 +31,13 @@ public class EditorMainMenu extends EditorMenu<DungeonPlugin, DungeonPlugin> {
         this.addExit(22);
 
         this.addItem(ItemUtil.createCustomHead(TEXTURE_DUNGEON), EditorLocales.DUNGEON_EDITOR, 10)
-                .setClick((viewer, event) -> this.plugin.runTask(task -> this.getDungeonEditor().open(viewer.getPlayer(), 1)));
+                .setClick((viewer, event) -> NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getDungeonEditor().open(viewer.getPlayer(), 1), null));
         this.addItem(ItemUtil.createCustomHead(TEXTURE_ANNOUNCE), EditorLocales.ANNOUNCE_EDITOR, 12)
-                .setClick((viewer, event) -> this.plugin.runTask(task -> this.getAnnounceEditor().open(viewer.getPlayer(), 1)));
+                .setClick((viewer, event) -> NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getAnnounceEditor().open(viewer.getPlayer(), 1), null));
         this.addItem(ItemUtil.createCustomHead(TEXTURE_KEY), EditorLocales.KEYS_EDITOR, 14)
-                .setClick((viewer, event) -> this.plugin.runTask(task -> this.getKeysEditor().open(viewer.getPlayer(), 1)));
+                .setClick((viewer, event) -> NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getKeysEditor().open(viewer.getPlayer(), 1), null));
         this.addItem(ItemUtil.createCustomHead(TEXTURE_MOB), EditorLocales.MOB_EDITOR, 16)
-                .setClick((viewer, event) -> this.plugin.runTask(task -> this.getMobEditor().open(viewer.getPlayer(), 1)));
+                .setClick((viewer, event) -> NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.getMobEditor().open(viewer.getPlayer(), 1), null));
     }
 
     @Override

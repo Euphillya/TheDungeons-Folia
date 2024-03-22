@@ -1,9 +1,11 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.editor;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.AutoPaged;
 import t.me.p1azmer.engine.api.menu.click.ItemClick;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
@@ -30,7 +32,7 @@ public class DungeonListEditor extends EditorMenu<DungeonPlugin, DungeonManager>
         super(manager.plugin(), manager, Config.EDITOR_TITLE_DUNGEON.get(), 45);
 
         this.addReturn(39).setClick((viewer, event) -> {
-            this.plugin.runTask(task -> this.plugin.getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.plugin.getEditor().open(viewer.getPlayer(), 1), null);
         });
         this.addNextPage(44);
         this.addPreviousPage(36);
@@ -84,10 +86,10 @@ public class DungeonListEditor extends EditorMenu<DungeonPlugin, DungeonManager>
         return (viewer, event) -> {
             if (event.isShiftClick() && event.isRightClick()) {
                 this.object.delete(dungeon);
-                this.plugin.runTask(task -> this.open(viewer.getPlayer(), viewer.getPage()));
+                NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(viewer.getPlayer(), viewer.getPage()), null);
                 return;
             }
-            this.plugin.runTask(task -> dungeon.getEditor().open(viewer.getPlayer(), 1));
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> dungeon.getEditor().open(viewer.getPlayer(), 1), null);
         };
     }
 }

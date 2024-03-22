@@ -1,8 +1,10 @@
 package t.me.p1azmer.plugin.dungeons.key.editor;
 
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.api.menu.AutoPaged;
 import t.me.p1azmer.engine.api.menu.click.ItemClick;
 import t.me.p1azmer.engine.api.menu.impl.EditorMenu;
@@ -27,7 +29,7 @@ public class KeyListEditor extends EditorMenu<DungeonPlugin, KeyManager> impleme
         super(keyManager.plugin(), keyManager, Config.EDITOR_TITLE_KEY.get(), 45);
 
         this.addReturn(39).setClick((viewer, event) ->
-                this.plugin.runTask(task -> this.plugin.getEditor().open(viewer.getPlayer(), 1)));
+                NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.plugin.getEditor().open(viewer.getPlayer(), 1), null));
         this.addNextPage(44);
         this.addPreviousPage(36);
 
@@ -78,7 +80,7 @@ public class KeyListEditor extends EditorMenu<DungeonPlugin, KeyManager> impleme
             Player player = viewer.getPlayer();
             if (event.isRightClick() && event.isShiftClick()) {
                 if (this.plugin.getKeyManager().delete(key)) {
-                    this.plugin.runTask(task -> this.open(player, viewer.getPage()));
+                    NexPlugin.getScheduler().runTask(SchedulerType.SYNC, viewer.getPlayer(), task -> this.open(player, viewer.getPage()), null);
                 }
                 return;
             }
