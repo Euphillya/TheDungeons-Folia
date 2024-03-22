@@ -10,6 +10,7 @@ import t.me.p1azmer.plugin.dungeons.Placeholders;
 import t.me.p1azmer.plugin.dungeons.dungeon.DungeonManager;
 import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public abstract class AbstractModule implements IPlaceholderMap {
@@ -75,14 +76,14 @@ public abstract class AbstractModule implements IPlaceholderMap {
             this.onActivate(true);
         } else
             this.setActiveType(ActiveType.NATURAL, this.canEnable.test(true));
-        return force || this.getActiveType().isActive() && this.onActivate(false);
+        return force || this.getActiveType().isActive() && this.onActivate(false).join();
     }
 
     public boolean deactivate() {
         return !this.getActiveType().setActive(!this.onDeactivate());
     }
 
-    protected abstract boolean onActivate(boolean force);
+    protected abstract CompletableFuture<Boolean> onActivate(boolean force);
 
     protected abstract boolean onDeactivate();
 

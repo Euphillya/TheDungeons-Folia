@@ -10,6 +10,7 @@ import t.me.p1azmer.plugin.dungeons.dungeon.modules.AbstractModule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class AnnounceModule extends AbstractModule {
@@ -29,8 +30,8 @@ public class AnnounceModule extends AbstractModule {
     }
 
     @Override
-    public boolean onActivate(boolean force) {
-        return true;
+    public CompletableFuture<Boolean> onActivate(boolean force) {
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override

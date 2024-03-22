@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.plugin.dungeons.Keys;
 import t.me.p1azmer.plugin.dungeons.api.region.RegionHandler;
 import t.me.p1azmer.plugin.dungeons.api.schematic.SchematicHandler;
@@ -18,9 +19,11 @@ import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
 import t.me.p1azmer.plugin.dungeons.dungeon.modules.AbstractModule;
 import t.me.p1azmer.plugin.dungeons.dungeon.modules.ModuleId;
 import t.me.p1azmer.plugin.dungeons.utils.Cuboid;
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -76,29 +79,38 @@ public class ChestModule extends AbstractModule {
     }
 
     @Override
-    public boolean onActivate(boolean force) {
+    public CompletableFuture<Boolean> onActivate(boolean force) {
         Location location = dungeon().getLocation();
         if (location == null) {
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         Material material = dungeon().getChestSettings().getMaterial();
         if (material.isAir()) {
             this.error("In the dungeon '" + dungeon().getId() + "' chest-block is set as air, change the settings!");
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         Cuboid cuboid = dungeon().getDungeonCuboid();
         if (cuboid == null) {
             this.error("Dungeon cuboid is null!");
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
-        this.blocks.addAll(cuboid.getBlocks().stream().filter(f -> f.getType().equals(material)).peek(block -> block.setMetadata(Keys.DUNGEON_CHEST_BLOCK.getKey(), new FixedMetadataValue(plugin(), this.dungeon().getId()))).toList());
+        List<Block> list = new ArrayList<>();
+        for (Block f : cuboid.getBlocks()) {
+            NexPlugin.getScheduler().runTask(SchedulerType.SYNC, f.getLocation(), schedulerTaskInter -> {
+                if (f.getType().equals(material)) {
+                    f.setMetadata(Keys.DUNGEON_CHEST_BLOCK.getKey(), new FixedMetadataValue(plugin(), this.dungeon().getId()));
+                    list.add(f);
+                }
+            });
+        }
+        this.blocks.addAll(list);
 
         if (this.blocks.isEmpty()) {
             this.error("Not found any Chest Block on dungeon location!");
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         Map<Reward, Double> rewards = this.dungeon().getRewards().stream().collect(Collectors.toMap(reward -> reward, Reward::getChance));
@@ -117,7 +129,7 @@ public class ChestModule extends AbstractModule {
             regionHandler.create(dungeon());
         }
 
-        return true;
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override

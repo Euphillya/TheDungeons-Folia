@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
+import t.me.p1azmer.engine.NexPlugin;
 import t.me.p1azmer.engine.Version;
 import t.me.p1azmer.engine.utils.LocationUtil;
 import t.me.p1azmer.engine.utils.random.Rnd;
@@ -16,7 +17,9 @@ import t.me.p1azmer.plugin.dungeons.dungeon.modules.AbstractModule;
 import t.me.p1azmer.plugin.dungeons.generator.RangeInfo;
 import t.me.p1azmer.plugin.dungeons.generator.config.GeneratorConfig;
 import t.me.p1azmer.plugin.dungeons.utils.Cuboid;
+import t.me.plazmer.engine.shaded.energie.model.SchedulerType;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 /*
@@ -43,13 +46,16 @@ public class SpawnModule extends AbstractModule {
     }
 
     @Override
-    public boolean onActivate(boolean force) {
-        if (isSpawned()) return force;
+    public CompletableFuture<Boolean> onActivate(boolean force) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        if (isSpawned()) {
+            return CompletableFuture.completedFuture(force);
+        }
 
         RangeInfo rangeInfo = GeneratorConfig.LOCATION_SEARCH_RANGES.get().get(dungeon().getWorld().getName());
         if (rangeInfo == null) {
             this.error("Unable to start dungeon spawn '" + dungeon().getId() + "' because the location generator for this '" + dungeon().getWorld().getName() + "' world is not set!");
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         World world = this.dungeon().getWorld();
@@ -89,38 +95,42 @@ public class SpawnModule extends AbstractModule {
         int modifiedY = originY;
         if (this.dungeon().getSchematicSettings().isUnderground())
             modifiedY += Rnd.get(Version.isAbove(Version.V1_18_R2) ? 30 : 10);
+        Location possibleLoc = new Location(world, randomX, modifiedY, randomZ);
 
-        Location result = this.dungeon().getSchematicSettings().isUnderground() ? new Location(world, randomX, modifiedY, randomZ) : LocationUtil.getFirstGroundBlock(new Location(world, randomX, modifiedY, randomZ));
-        Block block = result.getBlock();
-        Biome biome = block.getBiome();
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, possibleLoc, task -> {
+            Location result = this.dungeon().getSchematicSettings().isUnderground() ? possibleLoc : LocationUtil.getFirstGroundBlock(possibleLoc);
+            Block block = result.getBlock();
+            Biome biome = block.getBiome();
 
-        if (!force) {
-            RegionHandler handler = plugin().getRegionHandler();
-            if (handler != null){
-                if (!handler.isValidLocation(result)){
-                    return false;
+            if (!force) {
+                RegionHandler handler = plugin().getRegionHandler();
+                if (handler != null){
+                    if (!handler.isValidLocation(result)){
+                        future.complete(false);
+                    }
+                }
+                if (rangeInfo.isBiomesAsBlack()) {
+                    if (rangeInfo.getBiomes().contains(biome)) {
+                        this.debug("Biomes contains biome " + biome.name());
+                        future.complete(false);
+                    }
+                } else if (!rangeInfo.getBiomes().contains(biome)) {
+                    this.debug("Biomes not contains biome " + biome.name());
+                    future.complete(false);
+                }
+                if (rangeInfo.isMaterialsAsBlack()) {
+                    if (rangeInfo.getMaterials().contains(block.getType())) {
+                        this.debug("Materials contains block " + block.getType().name());
+                        future.complete(false);
+                    }
+                } else if (!rangeInfo.getMaterials().contains(block.getType())) {
+                    this.debug("Materials not contains block " + block.getType().name());
+                    future.complete(false);
                 }
             }
-            if (rangeInfo.isBiomesAsBlack()) {
-                if (rangeInfo.getBiomes().contains(biome)) {
-                    this.debug("Biomes contains biome " + biome.name());
-                    return false;
-                }
-            } else if (!rangeInfo.getBiomes().contains(biome)) {
-                this.debug("Biomes not contains biome " + biome.name());
-                return false;
-            }
-            if (rangeInfo.isMaterialsAsBlack()) {
-                if (rangeInfo.getMaterials().contains(block.getType())) {
-                    this.debug("Materials contains block " + block.getType().name());
-                    return false;
-                }
-            } else if (!rangeInfo.getMaterials().contains(block.getType())) {
-                this.debug("Materials not contains block " + block.getType().name());
-                return false;
-            }
-        }
-        return this.spawn(result);
+            future.complete(this.spawn(result));
+        });
+        return future;
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -65,11 +66,11 @@ public class SchematicModule extends AbstractModule {
     }
 
     @Override
-    public boolean onActivate(boolean force) {
+    public CompletableFuture<Boolean> onActivate(boolean force) {
         Location location = dungeon().getLocation();
         if (location == null) {
             this.error("Cannot found Dungeon Location!");
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         this.cachedSchematicFile = Rnd.get(this.getSchematicFiles());

@@ -9,6 +9,7 @@ import t.me.p1azmer.plugin.dungeons.dungeon.stage.DungeonStage;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class CommandModule extends AbstractModule {
@@ -34,8 +35,8 @@ public class CommandModule extends AbstractModule {
     }
 
     @Override
-    public boolean onActivate(boolean force) {
-        return true;
+    public CompletableFuture<Boolean> onActivate(boolean force) {
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override

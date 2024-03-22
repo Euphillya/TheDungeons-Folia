@@ -5,9 +5,10 @@ import t.me.p1azmer.engine.api.manager.Loadable;
 import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
 
 public interface SchematicHandler extends Loadable {
-    boolean paste(@NotNull Dungeon dungeon, @NotNull File schematicFile);
+    CompletableFuture<Boolean> paste(@NotNull Dungeon dungeon, @NotNull File schematicFile);
 
     boolean undo(@NotNull Dungeon dungeon);
 

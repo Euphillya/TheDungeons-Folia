@@ -6,6 +6,7 @@ import t.me.p1azmer.plugin.dungeons.api.hologram.HologramHandler;
 import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
 import t.me.p1azmer.plugin.dungeons.dungeon.modules.AbstractModule;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class HologramModule extends AbstractModule {
@@ -31,13 +32,13 @@ public class HologramModule extends AbstractModule {
     }
 
     @Override
-    public boolean onActivate(boolean force) {
+    public CompletableFuture<Boolean> onActivate(boolean force) {
         Location location = this.dungeon().getLocation();
         if (location == null || handler == null){
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
         handler.create(this.dungeon(), this.chestModule);
-        return true;
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override

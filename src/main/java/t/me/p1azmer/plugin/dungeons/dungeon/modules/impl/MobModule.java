@@ -6,6 +6,7 @@ import t.me.p1azmer.plugin.dungeons.api.mob.MobList;
 import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
 import t.me.p1azmer.plugin.dungeons.dungeon.modules.AbstractModule;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class MobModule extends AbstractModule {
@@ -30,7 +31,7 @@ public class MobModule extends AbstractModule {
     }
 
     @Override
-    protected boolean onActivate(boolean force) {
+    protected CompletableFuture<Boolean> onActivate(boolean force) {
         if (!dungeon().getSettings().getMobMap().isEmpty()) {
             dungeon().getSettings().getMobMap().forEach((mobId, amount) -> {
                 for (int i = 0; i < amount; i++) {
@@ -38,7 +39,7 @@ public class MobModule extends AbstractModule {
                 }
             });
         }
-        return true;
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override

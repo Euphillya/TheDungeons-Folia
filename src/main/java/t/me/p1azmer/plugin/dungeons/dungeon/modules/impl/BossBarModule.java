@@ -1,10 +1,7 @@
 package t.me.p1azmer.plugin.dungeons.dungeon.modules.impl;
 
-import org.bukkit.Bukkit;
 import org.bukkit.boss.BossBar;
 import org.jetbrains.annotations.NotNull;
-import t.me.p1azmer.engine.utils.Colorizer;
-import t.me.p1azmer.plugin.dungeons.config.Config;
 import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
 import t.me.p1azmer.plugin.dungeons.dungeon.modules.AbstractModule;
 
@@ -33,15 +30,15 @@ public class BossBarModule extends AbstractModule {
     }
 
     @Override
-    public boolean onActivate(boolean force) {
+    public CompletableFuture<Boolean> onActivate(boolean force) {
         if (this.bossBar == null) {
             //if (!force)return false;
             //this.bossBar = Bukkit.createBossBar(Colorizer.apply(this.dungeon().replacePlaceholders().apply(Config.BOSSBAR_TITLE.get())), Config.BOSSBAR_COLOR.get(), Config.BOSSBAR_STYLE.get()); // rewrite for dungeon self bossbar
-            return false;
+            CompletableFuture.completedFuture(false);
         }
 
         this.dungeon().getWorld().getPlayers().forEach(this.bossBar::addPlayer);
-        return true;
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override

@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 public class SchematicFAWEHandler implements SchematicHandler {
 
@@ -75,14 +76,14 @@ public class SchematicFAWEHandler implements SchematicHandler {
     }
 
     @Override
-    public boolean paste(@NotNull Dungeon dungeon, @NotNull File schematicFile) {
+    public CompletableFuture<Boolean> paste(@NotNull Dungeon dungeon, @NotNull File schematicFile) {
         Location location = dungeon.getLocation();
         if (location == null) {
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         if (!this.undo(dungeon)) {
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         World world = location.getWorld();
@@ -110,35 +111,39 @@ public class SchematicFAWEHandler implements SchematicHandler {
         session.setClipboard(holder);
         BlockVector3 toVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
         com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(world);
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        NexPlugin.getScheduler().runTask(SchedulerType.SYNC, location, schedulerTaskInter -> {
+            try (EditSession editSession = this.worldEdit.newEditSession(weWorld)) {
+                editSession.setReorderMode(EditSession.ReorderMode.MULTI_STAGE);
 
-        try (EditSession editSession = this.worldEdit.newEditSession(weWorld)) {
-            editSession.setReorderMode(EditSession.ReorderMode.MULTI_STAGE);
+                Operation operation = session.getClipboard()
+                        .createPaste(editSession)
+                        .to(toVector)
+                        .ignoreAirBlocks(dungeon.getSchematicSettings().isIgnoreAirBlocks())
+                        .copyEntities(true)
+                        .build();
+                Operations.complete(operation);
+                Clipboard clipboard = session.getClipboard().getClipboard();
+                Region region = clipboard.getRegion();
 
-            Operation operation = session.getClipboard()
-                    .createPaste(editSession)
-                    .to(toVector)
-                    .ignoreAirBlocks(dungeon.getSchematicSettings().isIgnoreAirBlocks())
-                    .copyEntities(true)
-                    .build();
-            Operations.complete(operation);
-            Clipboard clipboard = session.getClipboard().getClipboard();
-            Region region = clipboard.getRegion();
+                BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
+                Vector3 realTo = toVector.toVector3().add(holder.getTransform().apply(clipboardOffset.toVector3()));
+                Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
+                RegionSelector selector = new CuboidRegionSelector(weWorld, realTo.toBlockPoint(), max.toBlockPoint());
 
-            BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
-            Vector3 realTo = toVector.toVector3().add(holder.getTransform().apply(clipboardOffset.toVector3()));
-            Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
-            RegionSelector selector = new CuboidRegionSelector(weWorld, realTo.toBlockPoint(), max.toBlockPoint());
+                session.setRegionSelector(weWorld, selector);
+                selector.learnChanges();
+                selector.explainRegionAdjust(actor, session);
 
-            session.setRegionSelector(weWorld, selector);
-            selector.learnChanges();
-            selector.explainRegionAdjust(actor, session);
-
-            this.getEditSessionMap().put(location, editSession);
-            this.placedMap.put(dungeon, location);
-            return true;
-        } catch (WorldEditException e) {
-            throw new RuntimeException("Reach limit of block change when paste the schematic at '" + dungeon.getId() + "' dungeon!");
-        }
+                this.getEditSessionMap().put(location, editSession);
+                this.placedMap.put(dungeon, location);
+                future.complete(true);
+            } catch (WorldEditException e) {
+                future.complete(false);
+                throw new RuntimeException("Reach limit of block change when paste the schematic at '" + dungeon.getId() + "' dungeon!");
+            }
+        });
+        return future;
     }
 
     @Override
