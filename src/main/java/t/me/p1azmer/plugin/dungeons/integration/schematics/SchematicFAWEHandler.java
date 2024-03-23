@@ -156,6 +156,7 @@ public class SchematicFAWEHandler implements SchematicHandler {
             try {
                 Actor actor = this.plugin.getSessionConsole();
                 EditSession editSession = this.getEditSessionMap().get(location);
+                if (editSession == null) return;
                 BlockBag blockBag = editSession.getBlockBag();
                 LocalSession session = this.plugin.getSessionConsole();
 
