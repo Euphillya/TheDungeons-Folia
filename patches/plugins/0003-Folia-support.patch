@@ -1,0 +1,24 @@
+From ee8b066f2ab4c2e54262726f4f3034485dcb6d53 Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sat, 27 Jul 2024 22:12:32 +0200
+Subject: [PATCH 3/6] Folia support
+
+---
+ src/main/resources/plugin.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/main/resources/plugin.yml b/src/main/resources/plugin.yml
+index c370e97..6c6ff24 100644
+--- a/src/main/resources/plugin.yml
++++ b/src/main/resources/plugin.yml
+@@ -5,6 +5,7 @@ api-version: '1.17'
+ author: "plazmer"
+ description: "Dungeons - Automatic generation in any world"
+ depend: [ PLAZMER-ENGINE ]
++folia-supported: true
+ softdepend:
+   - ProtectionBlocks
+   - HolographicDisplays
+-- 
+2.45.1.windows.1
+

@@ -1,0 +1,27 @@
+From f7498b461ec6c46df6d44f85c3fc8811d5f49c48 Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sat, 27 Jul 2024 22:12:32 +0200
+Subject: [PATCH 4/6] Fix AsyncDungeonChangeStageEvent may only be trigger
+
+---
+ .../t/me/p1azmer/plugin/dungeons/dungeon/impl/Dungeon.java    | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/impl/Dungeon.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/impl/Dungeon.java
+index 1eff244..ca7f248 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/impl/Dungeon.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/impl/Dungeon.java
+@@ -437,7 +437,9 @@ public class Dungeon extends AbstractConfigHolder<DungeonPlugin> implements ICle
+   }
+ 
+   public void cancel(boolean shutdown) {
+-    if (!shutdown) DungeonStage.call(this, FREEZE, "cancelled and refresh");
++    if (!shutdown) {
++      CompletableFuture.runAsync(() -> DungeonStage.call(this, FREEZE, "cancelled and refresh")); // Fix AsyncDungeonChangeStageEvent
++    }
+ 
+     RegionHandler regionHandler = this.plugin().getRegionHandler();
+     GenerationType generationType = this.getGenerationSettings().getGenerationType();
+-- 
+2.45.1.windows.1
+

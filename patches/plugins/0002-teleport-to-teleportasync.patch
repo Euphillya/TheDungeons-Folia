@@ -1,0 +1,39 @@
+From f8fc44b9ea1eddaedd91deef19a45c6d8610b34f Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sat, 27 Jul 2024 22:12:31 +0200
+Subject: [PATCH 2/6] teleport to teleportasync
+
+---
+ .../p1azmer/plugin/dungeons/dungeon/modules/impl/MobModule.java | 2 +-
+ src/main/java/t/me/p1azmer/plugin/dungeons/mob/MobManager.java  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/MobModule.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/MobModule.java
+index 6557cdb..e88e2fd 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/MobModule.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/MobModule.java
+@@ -75,7 +75,7 @@ public class MobModule extends AbstractModule {
+ 
+                     if (entityLocation.distance(location) > dungeonRegion.getRadius()) { // TODO: write safe damage with radius and target
+                         Location groundBlock = LocationUtil.getFirstGroundBlock(location);
+-                        entity.teleport(groundBlock);
++                        entity.teleportAsync(groundBlock);
+                     }
+                 });
+     }
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/mob/MobManager.java b/src/main/java/t/me/p1azmer/plugin/dungeons/mob/MobManager.java
+index 1d0038f..dd530f4 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/mob/MobManager.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/mob/MobManager.java
+@@ -184,7 +184,7 @@ public class MobManager extends AbstractManager<DungeonPlugin> {
+             return null;
+         }
+ 
+-        plugin.runTask(sync -> bukkitEntity.teleport(location));
++        bukkitEntity.teleportAsync(location); //plugin.runTask(sync -> bukkitEntity.teleport(location));
+         return bukkitEntity;
+     }
+ 
+-- 
+2.45.1.windows.1
+

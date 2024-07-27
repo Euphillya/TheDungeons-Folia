@@ -1,0 +1,65 @@
+From 8c439f10e922ae0d434955577550e4f0cd0d2126 Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sat, 27 Jul 2024 22:12:32 +0200
+Subject: [PATCH 5/6] Fix WorldEdit when dont use FAWE
+
+---
+ .../dungeon/modules/impl/SchematicModule.java | 20 ++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java
+index a73c0a9..51fd735 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java
+@@ -2,6 +2,7 @@ package t.me.p1azmer.plugin.dungeons.dungeon.modules.impl;
+ 
+ import io.papermc.lib.PaperLib;
+ import lombok.Getter;
++import org.bukkit.Bukkit;
+ import org.bukkit.Location;
+ import org.jetbrains.annotations.NotNull;
+ import t.me.p1azmer.engine.utils.FileUtil;
+@@ -89,7 +90,7 @@ public class SchematicModule extends AbstractModule {
+   @Override
+   protected void onShutdown() {
+     this.generated = false;
+-    handler.undo(this.getDungeon());
++    this.plugin().runTask(bukkitTask -> handler.undo(this.getDungeon()));
+     this.cachedSchematicFile = null;
+   }
+ 
+@@ -108,10 +109,15 @@ public class SchematicModule extends AbstractModule {
+     }).join();
+ 
+     this.cachedSchematicFile = Rnd.get(this.getSchematicFiles());
+-    return handler.paste(this.getDungeon(), this.cachedSchematicFile).thenApply(result -> {
+-      this.generated = true;
+-      return result;
++    CompletableFuture<Boolean> future = new CompletableFuture<>();
++    this.plugin().runTask(bukkitTask -> {
++      handler.paste(this.getDungeon(), this.cachedSchematicFile).thenApply(result -> {
++        this.generated = true;
++        future.complete(result);
++        return result;
++      });
+     });
++    return future;
+   }
+ 
+   @Override
+@@ -129,7 +135,11 @@ public class SchematicModule extends AbstractModule {
+     this.generated = false;
+     this.cachedSchematicFile = null;
+ 
+-    CompletableFuture.runAsync(() -> handler.undo(this.getDungeon()));
++    if (Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) {
++      CompletableFuture.runAsync(() -> handler.undo(this.getDungeon()));
++    } else {
++      this.plugin().runTask(bukkitTask -> handler.undo(this.getDungeon()));
++    }
+     return true;
+   }
+ 
+-- 
+2.45.1.windows.1
+
