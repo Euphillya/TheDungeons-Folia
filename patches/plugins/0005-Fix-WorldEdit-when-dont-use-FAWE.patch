@@ -1,6 +1,6 @@
-From 8c439f10e922ae0d434955577550e4f0cd0d2126 Mon Sep 17 00:00:00 2001
+From b0a492d19947b254014ab0c27b01ad2ddb8f3ab6 Mon Sep 17 00:00:00 2001
 From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
-Date: Sat, 27 Jul 2024 22:12:32 +0200
+Date: Sat, 27 Jul 2024 22:22:18 +0200
 Subject: [PATCH 5/6] Fix WorldEdit when dont use FAWE
 
 ---

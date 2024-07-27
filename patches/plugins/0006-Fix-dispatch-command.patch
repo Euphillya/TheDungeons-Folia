@@ -1,6 +1,6 @@
-From 0095e2d23a6343b0df26e9d2b00ab34dd7f7639c Mon Sep 17 00:00:00 2001
+From 34769482f48a60a46edcf2dd72c2bdbdc23ff10f Mon Sep 17 00:00:00 2001
 From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
-Date: Sat, 27 Jul 2024 22:12:32 +0200
+Date: Sat, 27 Jul 2024 22:22:18 +0200
 Subject: [PATCH 6/6] Fix dispatch command
 
 ---
