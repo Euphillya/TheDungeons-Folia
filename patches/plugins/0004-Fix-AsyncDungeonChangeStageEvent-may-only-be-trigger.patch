@@ -1,7 +1,7 @@
 From 7720d4bda14d1c907d5357efb2ad83eb0a0f25c7 Mon Sep 17 00:00:00 2001
 From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
 Date: Sat, 27 Jul 2024 22:22:18 +0200
-Subject: [PATCH 4/6] Fix AsyncDungeonChangeStageEvent may only be trigger
+Subject: [PATCH 4/7] Fix AsyncDungeonChangeStageEvent may only be trigger
 
 ---
  .../t/me/p1azmer/plugin/dungeons/dungeon/impl/Dungeon.java    | 4 +++-

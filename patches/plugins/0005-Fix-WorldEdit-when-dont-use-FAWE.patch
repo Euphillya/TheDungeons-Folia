@@ -1,7 +1,7 @@
 From b0a492d19947b254014ab0c27b01ad2ddb8f3ab6 Mon Sep 17 00:00:00 2001
 From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
 Date: Sat, 27 Jul 2024 22:22:18 +0200
-Subject: [PATCH 5/6] Fix WorldEdit when dont use FAWE
+Subject: [PATCH 5/7] Fix WorldEdit when dont use FAWE
 
 ---
  .../dungeon/modules/impl/SchematicModule.java | 20 ++++++++++++++-----

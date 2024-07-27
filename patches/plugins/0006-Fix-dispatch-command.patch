@@ -1,7 +1,7 @@
 From 34769482f48a60a46edcf2dd72c2bdbdc23ff10f Mon Sep 17 00:00:00 2001
 From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
 Date: Sat, 27 Jul 2024 22:22:18 +0200
-Subject: [PATCH 6/6] Fix dispatch command
+Subject: [PATCH 6/7] Fix dispatch command
 
 ---
  .../plugin/dungeons/integration/region/RegionHandlerWG.java  | 5 ++++-
