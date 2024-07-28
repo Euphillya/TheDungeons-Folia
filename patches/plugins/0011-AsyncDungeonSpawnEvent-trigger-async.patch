@@ -1,0 +1,25 @@
+From 1d06c70ea0b531b1c82ce1f093f7f726f1707a51 Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sun, 28 Jul 2024 12:11:12 +0200
+Subject: [PATCH 11/12] AsyncDungeonSpawnEvent trigger async
+
+---
+ .../plugin/dungeons/dungeon/modules/impl/SpawnModule.java       | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
+index 34efee4..22df753 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
+@@ -76,7 +76,7 @@ public class SpawnModule extends AbstractModule {
+ 
+     if (!generationType.isDynamic()) {
+       if (spawnLocation.isPresent()) {
+-        return CompletableFuture.completedFuture(this.spawn(spawnLocation.get()));
++        return CompletableFuture.supplyAsync(() -> this.spawn(spawnLocation.get()));
+       }
+ 
+       this.error("The location of the dungeon is not set in the generation settings");
+-- 
+2.45.1.windows.1
+

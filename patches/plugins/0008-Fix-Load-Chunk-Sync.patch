@@ -1,0 +1,138 @@
+From 14c4a248b03554e31bb6f02349546831ce21a189 Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sun, 28 Jul 2024 12:11:12 +0200
+Subject: [PATCH 08/12] Fix Load Chunk Sync
+
+---
+ .../dungeon/modules/impl/SchematicModule.java |  4 +-
+ .../dungeon/modules/impl/SpawnModule.java     | 43 ++++++++++++-------
+ 2 files changed, 29 insertions(+), 18 deletions(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java
+index a73c0a9..676bd83 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SchematicModule.java
+@@ -101,11 +101,11 @@ public class SchematicModule extends AbstractModule {
+       return CompletableFuture.completedFuture(false);
+     }
+ 
+-    PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
++    /*PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
+       if (!chunk.isGenerated() || !chunk.isLoaded()) {
+         this.plugin().runTask(task -> chunk.getWorld().loadChunk(chunk));
+       }
+-    }).join();
++    }).join();*/
+ 
+     this.cachedSchematicFile = Rnd.get(this.getSchematicFiles());
+     return handler.paste(this.getDungeon(), this.cachedSchematicFile).thenApply(result -> {
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
+index c327e33..5a65e65 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
+@@ -1,6 +1,5 @@
+ package t.me.p1azmer.plugin.dungeons.dungeon.modules.impl;
+ 
+-import io.papermc.lib.PaperLib;
+ import lombok.Getter;
+ import org.bukkit.Bukkit;
+ import org.bukkit.Location;
+@@ -23,6 +22,7 @@ import t.me.p1azmer.plugin.dungeons.generator.config.GeneratorConfig;
+ 
+ import java.util.Optional;
+ import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.atomic.AtomicReference;
+ import java.util.function.Predicate;
+ 
+ /*
+@@ -132,11 +132,12 @@ public class SpawnModule extends AbstractModule {
+   }
+ 
+   // TODO: rewrite with chunks for optimization
+-  private boolean foundedRandomLocation(@NotNull World world, boolean force) {
++  private boolean foundedRandomLocation(@NotNull World world, boolean force) { return this.foundedRandomLocationFuture(world, force).join(); }
++  private CompletableFuture<Boolean> foundedRandomLocationFuture(@NotNull World world, boolean force) {
+     RangeInfo rangeInfo = GeneratorConfig.LOCATION_SEARCH_RANGES.get().get(getDungeon().getWorld().getName());
+     if (rangeInfo == null) {
+       this.error("Unable to start dungeon spawn '" + getDungeon().getId() + "' because the location generator for this '" + getDungeon().getWorld().getName() + "' world is not set!");
+-      return false;
++      return CompletableFuture.completedFuture(false);
+     }
+ 
+     boolean underground = this.getDungeon().getSchematicSettings().isUnderground();
+@@ -179,48 +180,58 @@ public class SpawnModule extends AbstractModule {
+     if (underground)
+       modifiedY += Rnd.get(Version.isAbove(Version.V1_18_R2) ? 30 : 10);
+ 
+-    Location result = new Location(world, randomX, modifiedY, randomZ);
++    AtomicReference<Location> result = new AtomicReference<>(new Location(world, randomX, modifiedY, randomZ));
++    CompletableFuture<Boolean> future = new CompletableFuture<>();
++    Bukkit.getRegionScheduler().run(this.plugin(), result.get(), scheduledTask -> {
+ 
+-    if (!underground) result = world.getHighestBlockAt(result).getLocation();
++    if (!underground) result.set(world.getHighestBlockAt(result.get()).getLocation());
+ 
+-    Block block = result.getBlock();
++    Block block = result.get().getBlock();
+     Biome biome = block.getBiome();
+ 
+     if (!force) {
+       String returnError = "Spawn returned result false, because: ";
+       RegionHandler handler = plugin().getRegionHandler();
+       if (handler != null) {
+-        if (!handler.isValidLocation(result)) {
+-          return false;
++        if (!handler.isValidLocation(result.get())) {
++          future.complete(false);
++          return;
+         }
+       }
+       if (rangeInfo.isBiomesAsBlack()) {
+         if (rangeInfo.getBiomes().contains(biome)) {
+           this.debug(returnError + "Biomes contains biome " + biome.name());
+-          return false;
++          future.complete(false);
++          return;
+         }
+       } else if (!rangeInfo.getBiomes().contains(biome)) {
+         this.debug(returnError + "Biomes not contains biome " + biome.name());
+-        return false;
++        future.complete(false);
++        return;
+       }
+-      if (!result.getChunk().isLoaded()){
++      if (!result.get().getChunk().isLoaded()){
+         if (onlyGeneratedChunks) {
+           this.debug(returnError + "Chunk not loaded");
+-          return false;
++          future.complete(false);
++          return;
+         }
+-        world.loadChunk(result.getChunk());
++        world.loadChunk(result.get().getChunk());
+       }
+       if (rangeInfo.isMaterialsAsBlack()) {
+         if (rangeInfo.getMaterials().contains(block.getType())) {
+           this.debug(returnError + "Materials contains block " + block.getType().name());
+-          return false;
++          future.complete(false);
++          return;
+         }
+       } else if (!rangeInfo.getMaterials().contains(block.getType())) {
+         this.debug(returnError + "Materials not contains block " + block.getType().name());
+-        return false;
++        future.complete(false);
++        return;
+       }
+     }
+ 
+-    return this.spawn(result);
++    CompletableFuture.runAsync(() -> future.complete(this.spawn(result.get())));
++    });
++    return future;
+   }
+ }
+\ No newline at end of file
+-- 
+2.45.1.windows.1
+

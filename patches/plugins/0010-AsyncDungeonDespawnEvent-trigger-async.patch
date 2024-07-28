@@ -1,0 +1,42 @@
+From 0d0ad620f3ca64a07ef17d4c2ba1154461861ebe Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sun, 28 Jul 2024 12:11:12 +0200
+Subject: [PATCH 10/12] AsyncDungeonDespawnEvent trigger async
+
+---
+ .../dungeon/modules/impl/SpawnModule.java      | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
+index 5a65e65..34efee4 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/SpawnModule.java
+@@ -110,15 +110,17 @@ public class SpawnModule extends AbstractModule {
+     if (!generationType.isDynamic() && spawnLocation.isPresent()) return false;
+     if (schematicModule.isPresent() && !schematicModule.get().tryDeactivate(ActionType.FORCE)) return false;
+ 
+-    AsyncDungeonDespawnEvent event = new AsyncDungeonDespawnEvent(this.getDungeon());
+-    Bukkit.getPluginManager().callEvent(event);
+-    if (event.isCancelled()) {
+-      this.debug("Unable to deactivate the '" + this.getId() + "' module due to an Event");
+-      return false;
+-    }
++    return CompletableFuture.supplyAsync(() -> {
++      AsyncDungeonDespawnEvent event = new AsyncDungeonDespawnEvent(this.getDungeon());
++      Bukkit.getPluginManager().callEvent(event);
++      if (event.isCancelled()) {
++        this.debug("Unable to deactivate the '" + this.getId() + "' module due to an Event");
++        return false;
++      }
+ 
+-    this.spawned = false;
+-    return true;
++      this.spawned = false;
++      return true;
++    }).join();
+   }
+ 
+   public boolean spawn(@NotNull Location result) {
+-- 
+2.45.1.windows.1
+

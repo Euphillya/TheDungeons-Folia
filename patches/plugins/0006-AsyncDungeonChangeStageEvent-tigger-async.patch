@@ -1,0 +1,35 @@
+From b7531afa0d4ae233c0e632f32ebdb01925f555a0 Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sun, 28 Jul 2024 12:11:11 +0200
+Subject: [PATCH 06/12] AsyncDungeonChangeStageEvent tigger async
+
+---
+ .../p1azmer/plugin/dungeons/dungeon/stage/DungeonStage.java  | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/stage/DungeonStage.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/stage/DungeonStage.java
+index 4f9fe84..29c0c94 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/stage/DungeonStage.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/stage/DungeonStage.java
+@@ -15,6 +15,7 @@ import t.me.p1azmer.plugin.dungeons.dungeon.impl.Dungeon;
+ import t.me.p1azmer.plugin.dungeons.dungeon.modules.ModuleManager;
+ import t.me.p1azmer.plugin.dungeons.dungeon.settings.impl.StageSettings;
+ 
++import java.util.concurrent.CompletableFuture;
+ import java.util.concurrent.atomic.AtomicInteger;
+ 
+ @Getter
+@@ -105,7 +106,9 @@ public enum DungeonStage {
+         }
+ 
+         if (timer.get() == stageSettings.getTime(this)) {
+-            call(dungeon, CollectionsUtil.next(dungeon.getStage(), stage -> stage != dungeon.getStage()), "self class");
++            CompletableFuture.runAsync(() -> {
++                call(dungeon, CollectionsUtil.next(dungeon.getStage(), stage -> stage != dungeon.getStage()), "self class");
++            });
+         } else {
+             timer.incrementAndGet();
+         }
+-- 
+2.45.1.windows.1
+

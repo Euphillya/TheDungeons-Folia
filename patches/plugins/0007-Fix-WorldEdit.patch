@@ -1,0 +1,50 @@
+From ebd52ec4379863d3e5d384b8a02114be10f37bce Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sun, 28 Jul 2024 12:11:12 +0200
+Subject: [PATCH 07/12] Fix WorldEdit
+
+---
+ .../integration/schematics/SchematicFAWEHandler.java        | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/integration/schematics/SchematicFAWEHandler.java b/src/main/java/t/me/p1azmer/plugin/dungeons/integration/schematics/SchematicFAWEHandler.java
+index ab22f0f..2f6e0a2 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/integration/schematics/SchematicFAWEHandler.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/integration/schematics/SchematicFAWEHandler.java
+@@ -20,6 +20,7 @@ import com.sk89q.worldedit.util.io.Closer;
+ import com.sk89q.worldedit.world.block.BlockState;
+ import com.sk89q.worldedit.world.block.BlockType;
+ import com.sk89q.worldedit.world.block.BlockTypes;
++import org.bukkit.Bukkit;
+ import org.bukkit.Location;
+ import org.bukkit.Material;
+ import org.bukkit.World;
+@@ -99,7 +100,7 @@ public class SchematicFAWEHandler implements SchematicHandler {
+     BlockVector3 toVector = BlockVector3.at(location.getX(), location.getY(), location.getZ());
+     com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(world);
+     CompletableFuture<Boolean> future = new CompletableFuture<>();
+-    plugin.runTask(sync -> {
++    Bukkit.getRegionScheduler().run(this.plugin, location, scheduledTask -> {
+       try (EditSession editSession = this.worldEdit.newEditSession(weWorld)) {
+         editSession.setReorderMode(EditSession.ReorderMode.MULTI_STAGE);
+ 
+@@ -158,6 +159,7 @@ public class SchematicFAWEHandler implements SchematicHandler {
+ 
+       session.setWorldOverride(editSession.getWorld());
+       EditSessionBuilder sessionBuilder = WorldEdit.getInstance().newEditSessionBuilder();
++      Bukkit.getRegionScheduler().run(this.plugin, location, scheduledTask -> {
+       if (Version.isBehind(Version.V1_18_R2)) {
+         this.getPlugin().runTask(sync -> {
+           try (EditSession newEditSession = sessionBuilder.blockBag(blockBag).actor(actor).world(editSession.getWorld()).build()) {
+@@ -171,7 +173,7 @@ public class SchematicFAWEHandler implements SchematicHandler {
+       }
+ 
+       this.worldEdit.flushBlockBag(actor, editSession);
+-      this.placedMap.remove(dungeon, location);
++      this.placedMap.remove(dungeon, location);});
+       return true;
+     } catch (NullPointerException ex) {
+       throw new RuntimeException("Error when restore the region!", ex);
+-- 
+2.45.1.windows.1
+

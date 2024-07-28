@@ -1,7 +1,7 @@
-From 7720d4bda14d1c907d5357efb2ad83eb0a0f25c7 Mon Sep 17 00:00:00 2001
+From 9a3f4eb2189e284b14ed2e5baee7107e809ec986 Mon Sep 17 00:00:00 2001
 From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
-Date: Sat, 27 Jul 2024 22:22:18 +0200
-Subject: [PATCH 4/7] Fix AsyncDungeonChangeStageEvent may only be trigger
+Date: Sun, 28 Jul 2024 12:11:11 +0200
+Subject: [PATCH 04/12] AsyncDungeonChangeStageEvent trigger async
 
 ---
  .../t/me/p1azmer/plugin/dungeons/dungeon/impl/Dungeon.java    | 4 +++-

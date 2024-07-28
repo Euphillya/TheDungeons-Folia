@@ -1,0 +1,33 @@
+From 0bf902125e236546b8e3f067d99621f13d35f7dc Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Sun, 28 Jul 2024 12:11:13 +0200
+Subject: [PATCH 12/12] Fix setupMenu ChestModule
+
+---
+ .../dungeons/dungeon/modules/impl/ChestModule.java     | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/ChestModule.java b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/ChestModule.java
+index a0b8507..fd825a7 100644
+--- a/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/ChestModule.java
++++ b/src/main/java/t/me/p1azmer/plugin/dungeons/dungeon/modules/impl/ChestModule.java
+@@ -183,10 +183,12 @@ public class ChestModule extends AbstractModule {
+   }
+ 
+   public void setupMenu(@NotNull Block block, @NotNull Map<Reward, Double> rewards) {
+-    ChestMenu menu = new ChestMenu(block, this.getDungeon(), rewards);
+-    ChestBlock chestBlock = new ChestBlock(this.getDungeon(), block, block.getLocation(), menu);
+-    this.getChestMap().put(block, chestBlock);
+-    this.debug("GUI for '" + block.getType() + "' installed");
++    Bukkit.getRegionScheduler().run(this.plugin(), block.getLocation(), scheduledTask -> {
++      ChestMenu menu = new ChestMenu(block, this.getDungeon(), rewards);
++      ChestBlock chestBlock = new ChestBlock(this.getDungeon(), block, block.getLocation(), menu);
++      this.getChestMap().put(block, chestBlock);
++      this.debug("GUI for '" + block.getType() + "' installed");
++    });
+   }
+ 
+   // TODO: Change to a separate class to handle more actions
+-- 
+2.45.1.windows.1
+
